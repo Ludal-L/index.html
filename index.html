@@ -1,185 +1,317 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>三维动画设计师个人网页</title>
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-      color: #fff;
-      background: #1a1a1a;
-    }
-    header {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      overflow: hidden;
-    }
-    header h1 {
-      font-size: 3em;
-      margin: 0;
-    }
-    header p {
-      font-size: 1.5em;
-      color: #ccc;
-    }
-    .btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background: #00ccff;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 5px;
-      margin-top: 20px;
-    }
-    section {
-      padding: 50px 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .portfolio {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-    .portfolio-item {
-      background: #333;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      transition: transform 0.3s, box-shadow 0.3s;
-      cursor: pointer;
-    }
-    .portfolio-item:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-    .portfolio-item img {
-      width: 100%;
-      border-radius: 10px;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #333;
-      padding: 20px;
-      border-radius: 10px;
-      width: 80%;
-      max-width: 800px;
-      position: relative;
-    }
-    .close {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 30px;
-      cursor: pointer;
-    }
-    iframe {
-      width: 100%;
-      height: 400px;
-      border: none;
-      border-radius: 10px;
-    }
-    footer {
-      background: #000;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鲁总贪吃蛇</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #000;
+            color: #0ff;
+            font-family: 'Arial', sans-serif;
+            touch-action: manipulation;
+        }
+
+        #gameTitle {
+            font-size: 2.5em;
+            margin: 20px 0;
+            background: linear-gradient(90deg, #00ffff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+        }
+
+        #gameCanvas {
+            border: 3px solid #00ffff;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+            margin: 10px 0;
+        }
+
+        .info-panel {
+            display: flex;
+            gap: 20px;
+            margin: 10px 0;
+        }
+
+        .info-item {
+            font-size: 20px;
+            padding: 8px 15px;
+            background: rgba(0, 100, 255, 0.2);
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+        }
+
+        #startBtn {
+            margin: 20px 0;
+            padding: 12px 30px;
+            font-size: 24px;
+            background: linear-gradient(45deg, #00ffff, #0066ff);
+            border: none;
+            border-radius: 25px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #startBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .control-btn {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 100, 255, 0.3);
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            color: #0ff;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-btn:active {
+            background: rgba(0, 100, 255, 0.6);
+            transform: scale(0.95);
+        }
+
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 30px 40px;
+            color: #0ff;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+        }
+
+        .dialog button {
+            margin-top: 15px;
+            padding: 8px 25px;
+            background: #0066ff;
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div id="particles-js"></div>
-    <div>
-      <h1 data-aos="fade-down">鲁闯</h1>
-      <p data-aos="fade-up" data-aos-delay="200">三维动画设计师 | 创造视觉奇迹</p>
-      <a href="#portfolio" class="btn" data-aos="fade-up" data-aos-delay="400">查看作品集</a>
+    <h1 id="gameTitle">鲁总贪吃蛇</h1>
+    <button id="startBtn">开始挑战</button>
+    <div class="info-panel">
+        <div id="score" class="info-item">得分：0</div>
+        <div id="timer" class="info-item">时间：60秒</div>
     </div>
-  </header>
-
-  <section id="about" data-aos="fade-up">
-    <h2>关于我</h2>
-    <p>我是一名三维动画设计师，专注于角色动画、场景设计和动态视觉效果。我的作品融合了艺术与科技，致力于为用户带来沉浸式体验。</p>
-  </section>
-
-  <section id="portfolio">
-    <h2 data-aos="fade-up">作品集</h2>
-    <div class="portfolio">
-      <div class="portfolio-item" onclick="openVideo('https://www.youtube.com/embed/你的视频ID')" data-aos="fade-up">
-        <img src="video-cover.jpg" alt="视频封面">
-        <h3>项目1</h3>
-      </div>
-      <div class="portfolio-item" onclick="openVideo('https://www.youtube.com/embed/你的视频ID')" data-aos="fade-up" data-aos-delay="200">
-        <img src="video-cover.jpg" alt="视频封面">
-        <h3>项目2</h3>
-      </div>
+    <canvas id="gameCanvas" width="300" height="300"></canvas>
+    
+    <div class="controls">
+        <div></div>
+        <button class="control-btn" id="upBtn">↑</button>
+        <div></div>
+        <button class="control-btn" id="leftBtn">←</button>
+        <button class="control-btn" id="downBtn">↓</button>
+        <button class="control-btn" id="rightBtn">→</button>
     </div>
-  </section>
 
-  <div id="videoModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeVideo()">&times;</span>
-      <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+    <div id="winDialog" class="dialog">
+        <h2>🎉 鲁总认可 🎉</h2>
+        <p>挑战成功！</p>
+        <button onclick="resetGame()">再来一局</button>
     </div>
-  </div>
 
-  <section id="resume" data-aos="fade-up">
-    <h2>履历</h2>
-    <p>工作经历：XXX公司，三维动画设计师，2020-2023</p>
-    <p>教育背景：XXX大学，动画设计专业</p>
-    <a href="resume.pdf" class="btn">下载简历</a>
-  </section>
+    <div id="loseDialog" class="dialog">
+        <h2>💥 拉胯 💥</h2>
+        <p>游戏失败</p>
+        <button onclick="resetGame()">重新挑战</button>
+    </div>
 
-  <section id="contact" data-aos="fade-up">
-    <h2>联系方式</h2>
-    <p>邮箱：yourname@example.com</p>
-    <p>Behance：<a href="https://behance.net/yourname" style="color: #00ccff;">behance.net/yourname</a></p>
-  </section>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const GRID_SIZE = 15;
+        const CELL_SIZE = canvas.width / GRID_SIZE;
 
-  <footer>
-    <p>&copy; 2025 鲁闯</p>
-  </footer>
+        let snake = [];
+        let food = {};
+        let dx = 0;
+        let dy = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let gameLoop;
+        let timer;
+        let isPlaying = false;
 
-  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-  <script>
-    // 初始化AOS
-    AOS.init();
+        function initGame() {
+            snake = [{x: 7, y: 7}];
+            dx = 1;
+            dy = 0;
+            score = 0;
+            timeLeft = 60;
+            generateFood();
+            document.getElementById('score').textContent = `得分：0`;
+            document.getElementById('timer').textContent = `时间：60秒`;
+        }
 
-    // 视频弹窗逻辑
-    function openVideo(url) {
-      document.getElementById('videoFrame').src = url;
-      document.getElementById('videoModal').style.display = 'flex';
-    }
-    function closeVideo() {
-      document.getElementById('videoModal').style.display = 'none';
-      document.getElementById('videoFrame').src = '';
-    }
+        function drawGame() {
+            // 绘制背景
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 初始化Particles.js
-    particlesJS.load('particles-js', 'particles.json', function() {
-      console.log('Particles.js loaded');
-    });
-  </script>
+            // 绘制蛇
+            snake.forEach((segment, index) => {
+                ctx.fillStyle = index === 0 ? '#00ffff' : '#0066ff';
+                ctx.beginPath();
+                ctx.roundRect(
+                    segment.x * CELL_SIZE + 1,
+                    segment.y * CELL_SIZE + 1,
+                    CELL_SIZE - 2,
+                    CELL_SIZE - 2,
+                    5
+                );
+                ctx.fill();
+            });
+
+            // 绘制食物
+            ctx.fillStyle = '#ff0066';
+            ctx.beginPath();
+            ctx.arc(
+                food.x * CELL_SIZE + CELL_SIZE/2,
+                food.y * CELL_SIZE + CELL_SIZE/2,
+                CELL_SIZE/2 - 2,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+        function moveSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+            // 碰撞检测
+            if (head.x < 0 || head.x >= GRID_SIZE || 
+                head.y < 0 || head.y >= GRID_SIZE ||
+                snake.some(s => s.x === head.x && s.y === head.y)) {
+                gameOver();
+                return;
+            }
+
+            snake.unshift(head);
+
+            // 吃食物检测
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                document.getElementById('score').textContent = `得分：${score}`;
+                if (score >= 10) {
+                    winGame();
+                    return;
+                }
+                generateFood();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function generateFood() {
+            do {
+                food = {
+                    x: Math.floor(Math.random() * GRID_SIZE),
+                    y: Math.floor(Math.random() * GRID_SIZE)
+                };
+            } while (snake.some(s => s.x === food.x && s.y === food.y));
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById('timer').textContent = `时间：${timeLeft}秒`;
+            
+            if (timeLeft <= 0) {
+                gameOver();
+            }
+        }
+
+        function gameOver() {
+            clearInterval(gameLoop);
+            clearInterval(timer);
+            isPlaying = false;
+            document.getElementById('loseDialog').style.display = 'block';
+        }
+
+        function winGame() {
+            clearInterval(gameLoop);
+            clearInterval(timer);
+            isPlaying = false;
+            document.getElementById('winDialog').style.display = 'block';
+        }
+
+        function resetGame() {
+            initGame();
+            document.getElementById('winDialog').style.display = 'none';
+            document.getElementById('loseDialog').style.display = 'none';
+            startGame();
+        }
+
+        function startGame() {
+            if (isPlaying) return;
+            isPlaying = true;
+            
+            clearInterval(gameLoop);
+            clearInterval(timer);
+            
+            gameLoop = setInterval(() => {
+                moveSnake();
+                drawGame();
+            }, 150);
+
+            timer = setInterval(updateTimer, 1000);
+            document.getElementById('startBtn').style.display = 'none';
+        }
+
+        // 事件监听
+        document.getElementById('startBtn').addEventListener('click', () => {
+            initGame();
+            startGame();
+        });
+
+        const controls = {
+            upBtn: () => changeDirection(0, -1),
+            downBtn: () => changeDirection(0, 1),
+            leftBtn: () => changeDirection(-1, 0),
+            rightBtn: () => changeDirection(1, 0)
+        };
+
+        Object.entries(controls).forEach(([id, fn]) => {
+            document.getElementById(id).addEventListener('click', fn);
+        });
+
+        function changeDirection(newDx, newDy) {
+            if (!isPlaying) return;
+            if (dx !== -newDx || dy !== -newDy) {
+                dx = newDx;
+                dy = newDy;
+            }
+        }
+
+        // 初始化
+        initGame();
+        drawGame();
+    </script>
 </body>
 </html>
